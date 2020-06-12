@@ -17,4 +17,6 @@ python github-pages/hoi4_icon_search_gen.py --goals ${INPUT_GOALS[@]//\"/} --ide
 touch "$GITHUB_WORKSPACE/$INPUT_MODPATH/.nojekyll"
 cp -f github-pages/gitignore "$GITHUB_WORKSPACE/$INPUT_MODPATH/.gitignore"
 ls
+cp -rf images "$GITHUB_WORKSPACE"
+cp -rf gfx "$GITHUB_WORKSPACE"
 mv index.html "$GITHUB_WORKSPACE/$INPUT_MODPATH"
