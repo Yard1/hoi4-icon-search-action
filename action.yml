@@ -1,0 +1,57 @@
+# action.yml
+name: 'HoI4 GFX Search Action'
+description: 'Generate a static HTML webpage for HoI4 GFX Search'
+branding:
+  icon: 'search'
+  color: 'green'
+inputs: 
+  title:
+    description: 'Webpage title'
+    required: true
+  favicon:
+    description: 'Path to webpage favicon'
+    required: false
+    default: ''
+  modifiedFiles:
+    description: 'Paths to modified image files (If not set, will convert all images)'
+    required: false
+    default: ''
+  goals:
+    description: 'Paths to goals (national focus) interface gfx files'
+    required: false
+    default: ''
+  ideas:
+    description: 'Paths to ideas interface gfx files'
+    required: false
+    default: ''
+  texticons:
+    description: 'Paths to texticons interface gfx files'
+    required: false
+    default: ''
+  events:
+    description: 'Paths to events interface gfx files'
+    required: false
+    default: ''
+  newsEvents:
+    description: 'Paths to news events interface gfx files'
+    required: false
+    default: ''
+  agencies:
+    description: 'Paths to agencies interface gfx files'
+    required: false
+    default: ''
+  decisions:
+    description: 'Paths to decisions interface gfx files'
+    required: false
+    default: ''
+  decisionsCat:
+    description: 'Paths to decisions category interface gfx files'
+    required: false
+    default: ''
+  decisionsPics:
+    description: 'Paths to decision category picture interface gfx files'
+    required: false
+    default: ''
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
