@@ -58,7 +58,10 @@ def convert_image(path, frames):
     if not path.exists() and not path.is_absolute():
         case_insensitive_glob = get_case_insensitive_glob(path)
         root = Path(".")
-        path = next(root.glob(case_insensitive_glob), None)
+        path_new = next(root.glob(case_insensitive_glob), None)
+        if path_new:
+            print("WRONG CASE: %s doesn't exist, but %s does!" % (str(path), str(path_new)))
+        path = path_new
     if path and path.exists():
         fname = path.stem
         with image.Image(filename=path) as img:
