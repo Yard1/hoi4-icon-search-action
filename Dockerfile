@@ -11,8 +11,7 @@ WORKDIR /gh-pages
 
 COPY /github-pages /gh-pages/.github-pages
 COPY /images /gh-pages/images
-COPY /bin/entrypoint.sh /gh-pages/entrypoint.sh
 
 RUN python -m pip install --upgrade pip && pip install -r .github-pages/requirements.txt
 
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["/gh-pages/.github-pages/entrypoint.sh"]
