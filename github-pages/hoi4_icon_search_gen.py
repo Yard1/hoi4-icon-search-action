@@ -134,6 +134,9 @@ def generate_icons_section(icons_dict, path_dicts, remove_str=None):
 
 
 def generate_html(goals, ideas, texticons, events, news_events, agencies, decisions, decisions_cat, decisions_pics, path_dicts, title, favicon, replace_date, template_path):
+    if not template_path.exists():
+        print("%s doesn't exist!" % str(template_path))
+        sys.exit(1)
     with open(template_path, 'r') as f:
         html = f.read()
 
@@ -196,6 +199,7 @@ def generate_html(goals, ideas, texticons, events, news_events, agencies, decisi
     if replace_date:
         html = html.replace('@UPDATE_DATE', str(datetime.datetime.utcnow()))
 
+    print("Writing %d characters to index.html..." % len(html))
     with open('index.html', 'w') as f:
         f.write(html)
 
