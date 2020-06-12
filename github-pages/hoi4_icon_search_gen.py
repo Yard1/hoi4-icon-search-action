@@ -59,7 +59,7 @@ def convert_image(path, frames):
     if not path.exists() and not path.is_absolute():
         case_insensitive_glob = get_case_insensitive_glob(path)
         root = Path(".")
-        path_new = next(root.glob(case_insensitive_glob), None)
+        path_new = next(root.glob(case_insensitive_glob), "")
         if path_new:
             ex_message = "WRONG CASE: %s doesn't exist, but %s does!" % (
                 str(path), str(path_new))
@@ -80,9 +80,8 @@ def convert_image(path, frames):
                 print("Saving %s..." % (new_fname))
                 img.save(filename=new_fname)
                 return new_fname
-    else:
-        print("%s does not exist!" % path)
-        return None
+    print("%s does not exist!" % path)
+    return None
 
 
 class SpriteType:
