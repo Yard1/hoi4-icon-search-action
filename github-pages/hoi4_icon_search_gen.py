@@ -108,50 +108,58 @@ def read_gfx_file(gfx_paths):
     gfx = {}
     gfx_files = defaultdict(list)
     for path in gfx_paths:
-        path = Path(path)
-        with open(path, 'r') as f:
-            file_contents = f.read()
-        file_contents = re.sub(r'#.*\n', ' ', file_contents, re.IGNORECASE)
-        file_contents = file_contents.replace('\n', ' ')
-        spriteTypes = re.findall(
-            r'spriteType\s*=\s*\{[^\{\}]*?\}', file_contents, re.IGNORECASE)
-        for spriteType in spriteTypes:
-            name = ''
-            texturefile = ''
-            noOfFrames = 1
-            match = re.search(r'\s+name\s*=\s*\"(.+?)\"',
-                              spriteType, re.IGNORECASE)
-            if match:
-                name = match.group(1)
-            match = re.search(r'\s+texturefile\s*=\s*\"(.+?)\"',
-                              spriteType, re.IGNORECASE)
-            if match:
-                texturefile = match.group(1)
+        try:
+            path = Path(path)
+            with open(path, 'r') as f:
+                file_contents = f.read()
+            file_contents = re.sub(r'#.*\n', ' ', file_contents, re.IGNORECASE)
+            file_contents = file_contents.replace('\n', ' ')
+            spriteTypes = re.findall(
+                r'spriteType\s*=\s*\{[^\{\}]*?\}', file_contents, re.IGNORECASE)
+            for spriteType in spriteTypes:
+                name = ''
+                texturefile = ''
                 try:
-                    texturefile = Path(str(texturefile))
-                    if not texturefile.exists():
-                        case_insensitive_glob = get_case_insensitive_glob(
-                            texturefile)
-                        texturefile_new = next(
-                            Path(".").glob(case_insensitive_glob), None)
-                        if texturefile_new:
-                            ex_message = "WRONG CASE: %s doesn't exist, but %s does!" % (
-                                str(texturefile), str(texturefile_new))
-                            BAD_FILES.append((str(texturefile), ex_message))
-                            print(ex_message)
-                            texturefile = texturefile_new
+                    noOfFrames = 1
+                    match = re.search(r'\s+name\s*=\s*\"(.+?)\"',
+                                    spriteType, re.IGNORECASE)
+                    if match:
+                        name = match.group(1)
+                    match = re.search(r'\s+texturefile\s*=\s*\"(.+?)\"',
+                                    spriteType, re.IGNORECASE)
+                    if match:
+                        texturefile = match.group(1)
+                        if texturefile[0] == "\\" or texturefile[0] == "/":
+                            texturefile = texturefile[1:]
+                        texturefile = Path(str(texturefile))
+                        if not texturefile.exists():
+                            case_insensitive_glob = get_case_insensitive_glob(
+                                texturefile)
+                            texturefile_new = next(
+                                Path(".").glob(case_insensitive_glob), None)
+                            if texturefile_new:
+                                ex_message = "WRONG CASE: %s doesn't exist, but %s does!" % (
+                                    str(texturefile), str(texturefile_new))
+                                BAD_FILES.append((str(texturefile), ex_message))
+                                print(ex_message)
+                                texturefile = texturefile_new
+                    match = re.search(
+                        r'\s+noOfFrames\s*=\s*([0-9]+)', spriteType, re.IGNORECASE)
+                    if match:
+                        noOfFrames = int(match.group(1))
+                    if name and texturefile:
+                        st = SpriteType(name, texturefile, noOfFrames)
+                        gfx[name] = st
+                        gfx_files[texturefile].append(st)
                 except:
                     print("EXCEPTION with %s %s in %s" % (name, texturefile, path))
                     ex_message = traceback.format_exc()
                     print(ex_message)
-            match = re.search(
-                r'\s+noOfFrames\s*=\s*([0-9]+)', spriteType, re.IGNORECASE)
-            if match:
-                noOfFrames = int(match.group(1))
-            if name and texturefile:
-                st = SpriteType(name, texturefile, noOfFrames)
-                gfx[name] = st
-                gfx_files[texturefile].append(st)
+        except:
+            print("EXCEPTION with %s" % path)
+            ex_message = traceback.format_exc()
+            BAD_FILES.append((str(path), ex_message))
+            print(ex_message)
 
     return (gfx, gfx_files)
 
