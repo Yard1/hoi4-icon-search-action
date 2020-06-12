@@ -70,7 +70,7 @@ def convert_image(path, frames):
             print("Saving %s..." % (new_fname))
             img.save(filename=new_fname)
             return new_fname
-    
+
     print("%s does not exist!" % path)
     return None
 
