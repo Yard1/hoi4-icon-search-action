@@ -61,8 +61,10 @@ def convert_image(path, frames):
         root = Path(".")
         path_new = next(root.glob(case_insensitive_glob), None)
         if path_new:
-            print("WRONG CASE: %s doesn't exist, but %s does!" %
-                  (str(path), str(path_new)))
+            ex_message = "WRONG CASE: %s doesn't exist, but %s does!" % (
+                str(path), str(path_new))
+            BAD_FILES.append((path, ex_message))
+            print(ex_message)
         path = path_new
     if path:
         path = Path(path)
@@ -71,7 +73,8 @@ def convert_image(path, frames):
             with image.Image(filename=path) as img:
                 if frames > 1:
                     print("%s has %d frames, cropping..." % (fname, frames))
-                    img.crop(0, 0, width=img.width // frames, height=img.height)
+                    img.crop(0, 0, width=img.width //
+                             frames, height=img.height)
                 library.MagickSetCompressionQuality(img.wand, 00)
                 new_fname = path.parent.joinpath(fname + '.png')
                 print("Saving %s..." % (new_fname))
