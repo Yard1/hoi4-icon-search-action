@@ -7,11 +7,11 @@ LABEL com.github.actions.color="green"
 
 LABEL maintainer="Antoni Baum <antoni.baum@protonmail.com>"
 
-WORKDIR /gh-pages
+WORKDIR /hoi4-icon-search-action
 
-COPY /github-pages /gh-pages/.github-pages
-COPY /images /gh-pages/images
+COPY /github-pages /hoi4-icon-search-action/.github-pages
+COPY /images /hoi4-icon-search-action/images
 
 RUN python -m pip install --upgrade pip && pip install -r .github-pages/requirements.txt
 
-ENTRYPOINT ["/gh-pages/.github-pages/entrypoint.sh"]
+ENTRYPOINT ["/hoi4-icon-search-action/.github-pages/entrypoint.sh"]
