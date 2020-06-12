@@ -56,7 +56,7 @@ def convert_images(paths, updated_images=None):
 
 
 def convert_image(path, frames):
-    if path and path.exists():
+    if path.exists():
         fname = path.stem
         with image.Image(filename=path) as img:
             if frames > 1:
