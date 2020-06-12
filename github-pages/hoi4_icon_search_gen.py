@@ -60,7 +60,7 @@ def convert_image(path, frames):
         fname = path.stem
         with image.Image(filename=path) as img:
             if frames > 1:
-                print("%s has %d frames, cropping..." % (fname, frames))
+                print("%s has %d frames, cropping..." % (path, frames))
                 img.crop(0, 0, width=img.width //
                          frames, height=img.height)
             library.MagickSetCompressionQuality(img.wand, 00)
