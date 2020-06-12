@@ -1,5 +1,10 @@
 #!/bin/bash
 
+cd ..
+
+pwd
+ls
+
 mv hoi4-icon-search-action/* $GITHUB_WORKSPACE/gh-pages
 rm -r hoi4-icon-search-action
 
