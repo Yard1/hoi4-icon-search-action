@@ -56,31 +56,20 @@ def convert_images(paths, updated_images=None):
 
 
 def convert_image(path, frames):
-    path_original = path
-    if not path.exists() and not path.is_absolute():
-        case_insensitive_glob = get_case_insensitive_glob(path)
-        root = Path(".")
-        path = next(root.glob(case_insensitive_glob), "")
-        if path:
-            ex_message = "WRONG CASE: %s doesn't exist, but %s does!" % (
-                str(path_original), str(path))
-            BAD_FILES.append((path_original, ex_message))
-            print(ex_message)
-    if path:
-        path = Path(path)
-        if path.exists():
-            fname = path.stem
-            with image.Image(filename=path) as img:
-                if frames > 1:
-                    print("%s has %d frames, cropping..." % (fname, frames))
-                    img.crop(0, 0, width=img.width //
-                             frames, height=img.height)
-                library.MagickSetCompressionQuality(img.wand, 00)
-                new_fname = path.parent.joinpath(fname + '.png')
-                print("Saving %s..." % (new_fname))
-                img.save(filename=new_fname)
-                return new_fname
-    print("%s does not exist!" % path_original)
+    if path and path.exists():
+        fname = path.stem
+        with image.Image(filename=path) as img:
+            if frames > 1:
+                print("%s has %d frames, cropping..." % (fname, frames))
+                img.crop(0, 0, width=img.width //
+                         frames, height=img.height)
+            library.MagickSetCompressionQuality(img.wand, 00)
+            new_fname = path.parent.joinpath(fname + '.png')
+            print("Saving %s..." % (new_fname))
+            img.save(filename=new_fname)
+            return new_fname
+
+    print("%s does not exist!" % path)
     return None
 
 
@@ -135,6 +124,17 @@ def read_gfx_file(gfx_paths):
                               spriteType, re.IGNORECASE)
             if match:
                 texturefile = Path(str(match.group(1)))
+                if not texturefile.exists():
+                    case_insensitive_glob = get_case_insensitive_glob(
+                        texturefile)
+                    texturefile_new = next(
+                        Path(".").glob(case_insensitive_glob), None)
+                    if texturefile_new:
+                        ex_message = "WRONG CASE: %s doesn't exist, but %s does!" % (
+                            str(texturefile), str(texturefile_new))
+                        BAD_FILES.append((str(texturefile), ex_message))
+                        print(ex_message)
+                        texturefile = texturefile_new
             match = re.search(
                 r'\s+noOfFrames\s*=\s*([0-9]+)', spriteType, re.IGNORECASE)
             if match:
