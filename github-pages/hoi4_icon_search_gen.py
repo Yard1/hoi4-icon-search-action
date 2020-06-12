@@ -66,17 +66,17 @@ def convert_image(path, frames):
         path = path_new
     if path:
         path = Path(path)
-    if path.exists():
-        fname = path.stem
-        with image.Image(filename=path) as img:
-            if frames > 1:
-                print("%s has %d frames, cropping..." % (fname, frames))
-                img.crop(0, 0, width=img.width // frames, height=img.height)
-            library.MagickSetCompressionQuality(img.wand, 00)
-            new_fname = path.parent.joinpath(fname + '.png')
-            print("Saving %s..." % (new_fname))
-            img.save(filename=new_fname)
-            return new_fname
+        if path.exists():
+            fname = path.stem
+            with image.Image(filename=path) as img:
+                if frames > 1:
+                    print("%s has %d frames, cropping..." % (fname, frames))
+                    img.crop(0, 0, width=img.width // frames, height=img.height)
+                library.MagickSetCompressionQuality(img.wand, 00)
+                new_fname = path.parent.joinpath(fname + '.png')
+                print("Saving %s..." % (new_fname))
+                img.save(filename=new_fname)
+                return new_fname
     else:
         print("%s does not exist!" % path)
         return None
