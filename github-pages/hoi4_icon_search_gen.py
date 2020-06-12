@@ -38,7 +38,7 @@ def convert_image(path, frames):
                 print("%s has %d frames, cropping..." % (fname, frames))
                 img.crop(0, 0, width=img.width // frames, height=img.height)
             library.MagickSetCompressionQuality(img.wand, 00)
-            new_fname = fname + '.png'
+            new_fname = path.parent.joinpath(fname + '.png')
             print("Saving %s..." % (new_fname))
             img.save(filename=new_fname)
             return new_fname
@@ -111,7 +111,7 @@ def generate_icons_section(icons_dict, path_dicts, remove_str=None):
     for key, icon in icons_dict.items():
         name = icon.name
         path = icon.texturefile
-        img_src = path.stem + '.png'
+        img_src = path.parent.joinpath(path.stem + '.png')
         if not img_src.exists():
             try:
                 frames = icon.frames
