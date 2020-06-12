@@ -1,3 +1,27 @@
+# hoi4_icon_search_gen.py by Yard1 (Antoni Baum)
+#
+#  MIT License
+#
+# Copyright (c) 2020 Antoni Baum
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import os
 import re
 import sys
@@ -31,7 +55,11 @@ def convert_images(paths, updated_images=None):
 
 
 def convert_image(path, frames):
-    if path.exists():
+    if not path.exists() and not path.is_absolute():
+        case_insensitive_glob = get_case_insensitive_glob(path)
+        root = Path(".")
+        path = next(root.glob(case_insensitive_glob), None)
+    if path:
         fname = path.stem
         with image.Image(filename=path) as img:
             if frames > 1:
@@ -42,9 +70,9 @@ def convert_image(path, frames):
             print("Saving %s..." % (new_fname))
             img.save(filename=new_fname)
             return new_fname
-    else:
-        print("%s does not exist!" % path)
-        return None
+    
+    print("%s does not exist!" % path)
+    return None
 
 
 class SpriteType:
@@ -59,6 +87,11 @@ class SpriteType:
     def __repr__(self):
         return self.name
 
+
+def get_case_insensitive_glob(path):
+    return ''.join(['[%s%s]' % (c.lower(), c.upper()) if c.isalpha() else c for c in str(path)])
+
+
 def read_gfx(gfx_paths):
     gfx_paths_expanded = []
     for path in gfx_paths:
@@ -66,8 +99,9 @@ def read_gfx(gfx_paths):
             gfx_paths_expanded.extend(path.rglob("*.gfx"))
         else:
             gfx_paths_expanded.append(path)
-    
+
     return read_gfx_file(gfx_paths_expanded)
+
 
 def read_gfx_file(gfx_paths):
     gfx = {}
