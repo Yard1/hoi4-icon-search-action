@@ -126,18 +126,24 @@ def read_gfx_file(gfx_paths):
             match = re.search(r'\s+texturefile\s*=\s*\"(.+?)\"',
                               spriteType, re.IGNORECASE)
             if match:
-                texturefile = Path(str(match.group(1)))
-                if not texturefile.exists():
-                    case_insensitive_glob = get_case_insensitive_glob(
-                        texturefile)
-                    texturefile_new = next(
-                        Path(".").glob(case_insensitive_glob), None)
-                    if texturefile_new:
-                        ex_message = "WRONG CASE: %s doesn't exist, but %s does!" % (
-                            str(texturefile), str(texturefile_new))
-                        BAD_FILES.append((str(texturefile), ex_message))
-                        print(ex_message)
-                        texturefile = texturefile_new
+                texturefile = match.group(1)
+                try:
+                    texturefile = Path(str(texturefile))
+                    if not texturefile.exists():
+                        case_insensitive_glob = get_case_insensitive_glob(
+                            texturefile)
+                        texturefile_new = next(
+                            Path(".").glob(case_insensitive_glob), None)
+                        if texturefile_new:
+                            ex_message = "WRONG CASE: %s doesn't exist, but %s does!" % (
+                                str(texturefile), str(texturefile_new))
+                            BAD_FILES.append((str(texturefile), ex_message))
+                            print(ex_message)
+                            texturefile = texturefile_new
+                except:
+                    print("EXCEPTION with %s %s in %s" % (name, texturefile, path))
+                    ex_message = traceback.format_exc()
+                    print(ex_message)
             match = re.search(
                 r'\s+noOfFrames\s*=\s*([0-9]+)', spriteType, re.IGNORECASE)
             if match:
