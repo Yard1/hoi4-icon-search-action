@@ -56,6 +56,7 @@ def convert_images(paths, updated_images=None):
 
 
 def convert_image(path, frames):
+    global BAD_FILES
     if path.exists():
         fname = path.stem
         with image.Image(filename=path) as img:
@@ -103,6 +104,7 @@ def read_gfx(gfx_paths):
 
 
 def read_gfx_file(gfx_paths):
+    global BAD_FILES
     gfx = {}
     gfx_files = defaultdict(list)
     for path in gfx_paths:
@@ -271,10 +273,11 @@ def main():
                    args.modified_images)
     generate_html(goals, ideas, texticons, events, news_events, agencies, decisions,
                   decisions_cat, decisions_pics, path_dicts, args.title, args.favicon, args.replace_date, args.template_path)
-    print("The following files had exceptions:")
+    print("The following files had exceptions or other issues:")
     for f in BAD_FILES:
         print(f[0])
         print(f[1])
+        print()
 
 
 def setup_cli_arguments():
