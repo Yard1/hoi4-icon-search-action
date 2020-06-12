@@ -56,16 +56,16 @@ def convert_images(paths, updated_images=None):
 
 
 def convert_image(path, frames):
+    path_original = path
     if not path.exists() and not path.is_absolute():
         case_insensitive_glob = get_case_insensitive_glob(path)
         root = Path(".")
-        path_new = next(root.glob(case_insensitive_glob), "")
-        if path_new:
+        path = next(root.glob(case_insensitive_glob), "")
+        if path:
             ex_message = "WRONG CASE: %s doesn't exist, but %s does!" % (
-                str(path), str(path_new))
-            BAD_FILES.append((path, ex_message))
+                str(path_original), str(path))
+            BAD_FILES.append((path_original, ex_message))
             print(ex_message)
-        path = path_new
     if path:
         path = Path(path)
         if path.exists():
@@ -80,7 +80,7 @@ def convert_image(path, frames):
                 print("Saving %s..." % (new_fname))
                 img.save(filename=new_fname)
                 return new_fname
-    print("%s does not exist!" % path)
+    print("%s does not exist!" % path_original)
     return None
 
 
