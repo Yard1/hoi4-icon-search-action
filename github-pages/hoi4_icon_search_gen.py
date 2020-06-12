@@ -128,10 +128,10 @@ def read_gfx_file(gfx_paths):
                     match = re.search(r'\s+texturefile\s*=\s*\"(.+?)\"',
                                       spriteType, re.IGNORECASE)
                     if match:
-                        texturefile = match.group(1)
+                        texturefile = str(match.group(1))
                         if texturefile[0] == "\\" or texturefile[0] == "/":
                             texturefile = texturefile[1:]
-                        texturefile = Path(str(texturefile))
+                        texturefile = Path(texturefile)
                         if not texturefile.exists():
                             case_insensitive_glob = get_case_insensitive_glob(
                                 texturefile)
