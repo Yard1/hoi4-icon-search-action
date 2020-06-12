@@ -7,8 +7,12 @@ LABEL com.github.actions.color="green"
 
 LABEL maintainer="Antoni Baum <antoni.baum@protonmail.com>"
 
+WORKDIR /gh-pages
+
 COPY /github-pages /gh-pages/.github-pages
 COPY /images /gh-pages/images
-COPY /bin/entrypoint.sh /entrypoint.sh
+COPY /bin/entrypoint.sh /gh-pages/entrypoint.sh
 
-ENTRYPOINT ["/entrypoint.sh"]
+RUN python -m pip install --upgrade pip && pip install -r .github-pages/requirements.txt
+
+ENTRYPOINT ["entrypoint.sh"]
