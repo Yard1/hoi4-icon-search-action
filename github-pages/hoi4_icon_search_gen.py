@@ -68,8 +68,9 @@ def convert_image(path, frames):
             print("Saving %s..." % (new_fname))
             img.save(filename=new_fname)
             return new_fname
-
-    print("%s does not exist!" % path)
+    ex_message = "%s does not exist!" % path
+    BAD_FILES.append((path, ex_message))
+    print(ex_message)
     return None
 
 
