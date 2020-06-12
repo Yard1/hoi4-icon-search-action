@@ -16,3 +16,4 @@ read -a INPUT_DECISIONPICS <<< "${INPUT_DECISIONPICS}"
 python /hoi4-icon-search-action/github-pages/hoi4_icon_search_gen.py --goals ${INPUT_GOALS[@]//\"/} --ideas ${INPUT_IDEAS[@]//\"/} --texticons ${INPUT_TEXTICONS[@]//\"/} --events ${INPUT_EVENTS[@]//\"/} --news-events ${INPUT_NEWSEVENTS[@]//\"/} --agencies ${INPUT_AGENCIES[@]//\"/}  --decisions ${INPUT_DECISIONS[@]//\"/} --decisions-cat ${INPUT_DECISIONSCAT[@]//\"/} --decisions-pics ${INPUT_DECISIONPICS[@]//\"/} --title "${INPUT_TITLE}" --favicon "${INPUT_FAVICON}" --modified-images-str "${INPUT_MODIFIEDFILES}" --template-path "/hoi4-icon-search-action/github-pages/index.template"
 touch .nojekyll
 cp -f /hoi4-icon-search-action/github-pages/gitignore .gitignore
+cp -rf /hoi4-icon-search-action/images .
