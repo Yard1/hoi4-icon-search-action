@@ -12,6 +12,10 @@ inputs:
     description: 'Path to webpage favicon'
     required: false
     default: ''
+  modPath:
+    description: 'Path to the mod folder in $GITHUB_WORKSPACE (root of repository). (Default: "" - root of repository itself)'
+    required: false
+    default: ''
   modifiedFiles:
     description: 'Paths to modified image files (If not set, will convert all images)'
     required: false
