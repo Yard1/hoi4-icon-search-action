@@ -59,7 +59,7 @@ def convert_image(path, frames):
         case_insensitive_glob = get_case_insensitive_glob(path)
         root = Path(".")
         path = next(root.glob(case_insensitive_glob), None)
-    if path:
+    if path and path.exists():
         fname = path.stem
         with image.Image(filename=path) as img:
             if frames > 1:
@@ -126,7 +126,7 @@ def read_gfx_file(gfx_paths):
             if match:
                 texturefile = Path(match.group(1))
             match = re.search(
-                r'\s+noOfFrames\s*=\s*([0-9]+?)', spriteType, re.IGNORECASE)
+                r'\s+noOfFrames\s*=\s*([0-9]+)', spriteType, re.IGNORECASE)
             if match:
                 noOfFrames = int(match.group(1))
             if name and texturefile:
