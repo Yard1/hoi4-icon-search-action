@@ -2,7 +2,7 @@
 
 cd /
 
-cp -n hoi4-icon-search-action/* $GITHUB_WORKSPACE/gh-pages
+cp -rn hoi4-icon-search-action/* $GITHUB_WORKSPACE/gh-pages
 
 cd $GITHUB_WORKSPACE/gh-pages
 
