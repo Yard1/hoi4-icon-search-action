@@ -42,6 +42,7 @@ def convert_images(paths, updated_images=None):
     global BAD_FILES
     for x in paths:
         for path, value in x.items():
+            path = Path(path)
             frames = value[0].frames
             if updated_images and not path in updated_images:
                 continue
@@ -60,9 +61,12 @@ def convert_image(path, frames):
         root = Path(".")
         path_new = next(root.glob(case_insensitive_glob), None)
         if path_new:
-            print("WRONG CASE: %s doesn't exist, but %s does!" % (str(path), str(path_new)))
+            print("WRONG CASE: %s doesn't exist, but %s does!" %
+                  (str(path), str(path_new)))
         path = path_new
-    if path and path.exists():
+    if path:
+        path = Path(path)
+    if path.exists():
         fname = path.stem
         with image.Image(filename=path) as img:
             if frames > 1:
@@ -73,9 +77,9 @@ def convert_image(path, frames):
             print("Saving %s..." % (new_fname))
             img.save(filename=new_fname)
             return new_fname
-
-    print("%s does not exist!" % path)
-    return None
+    else:
+        print("%s does not exist!" % path)
+        return None
 
 
 class SpriteType:
@@ -110,6 +114,7 @@ def read_gfx_file(gfx_paths):
     gfx = {}
     gfx_files = defaultdict(list)
     for path in gfx_paths:
+        path = Path(path)
         with open(path, 'r') as f:
             file_contents = f.read()
         file_contents = re.sub(r'#.*\n', ' ', file_contents, re.IGNORECASE)
@@ -127,7 +132,7 @@ def read_gfx_file(gfx_paths):
             match = re.search(r'\s+texturefile\s*=\s*\"(.+?)\"',
                               spriteType, re.IGNORECASE)
             if match:
-                texturefile = Path(match.group(1))
+                texturefile = Path(str(match.group(1)))
             match = re.search(
                 r'\s+noOfFrames\s*=\s*([0-9]+)', spriteType, re.IGNORECASE)
             if match:
