@@ -7,6 +7,7 @@ import argparse
 import datetime
 import traceback
 from collections import defaultdict
+from pathlib import Path
 from wand import image  # also requires apt-get install libmagickwand-dev
 from wand.api import library
 
@@ -30,8 +31,8 @@ def convert_images(paths, updated_images=None):
 
 
 def convert_image(path, frames):
-    if os.path.exists(path):
-        fname = os.path.splitext(path)[0]
+    if path.exists():
+        fname = path.stem
         with image.Image(filename=path) as img:
             if frames > 1:
                 print("%s has %d frames, cropping..." % (fname, frames))
@@ -58,12 +59,20 @@ class SpriteType:
     def __repr__(self):
         return self.name
 
-
 def read_gfx(gfx_paths):
+    gfx_paths_expanded = []
+    for path in gfx_paths:
+        if path.is_dir():
+            gfx_paths_expanded.extend(path.rglob("*.gfx"))
+        else:
+            gfx_paths_expanded.append(path)
+    
+    return read_gfx_file(gfx_paths_expanded)
+
+def read_gfx_file(gfx_paths):
     gfx = {}
     gfx_files = defaultdict(list)
     for path in gfx_paths:
-        path = os.path.join(path)
         with open(path, 'r') as f:
             file_contents = f.read()
         file_contents = re.sub(r'#.*\n', ' ', file_contents, re.IGNORECASE)
@@ -81,7 +90,7 @@ def read_gfx(gfx_paths):
             match = re.search(r'\s+texturefile\s*=\s*\"(.+?)\"',
                               spriteType, re.IGNORECASE)
             if match:
-                texturefile = os.path.normpath(match.group(1))
+                texturefile = Path(match.group(1))
             match = re.search(
                 r'\s+noOfFrames\s*=\s*([0-9]+?)', spriteType, re.IGNORECASE)
             if match:
@@ -102,8 +111,8 @@ def generate_icons_section(icons_dict, path_dicts, remove_str=None):
     for key, icon in icons_dict.items():
         name = icon.name
         path = icon.texturefile
-        img_src = os.path.splitext(path)[0] + '.png'
-        if not os.path.exists(img_src):
+        img_src = path.stem + '.png'
+        if not img_src.exists():
             try:
                 frames = icon.frames
                 convert_image(path, frames)
@@ -112,7 +121,7 @@ def generate_icons_section(icons_dict, path_dicts, remove_str=None):
                 ex_message = traceback.format_exc()
                 BAD_FILES.append((path, ex_message))
                 print(ex_message)
-        if os.path.exists(img_src):
+        if img_src.exists():
             if remove_str:
                 name = name.replace(remove_str, "")
             icons_num += 1
@@ -124,8 +133,8 @@ def generate_icons_section(icons_dict, path_dicts, remove_str=None):
     return (icon_entries, icons_num)
 
 
-def generate_html(goals, ideas, texticons, events, news_events, agencies, decisions, decisions_cat, decisions_pics, path_dicts, title, favicon, replace_date):
-    with open(os.path.join('.github-pages', 'index.template'), 'r') as f:
+def generate_html(goals, ideas, texticons, events, news_events, agencies, decisions, decisions_cat, decisions_pics, path_dicts, title, favicon, replace_date, template_path):
+    with open(template_path, 'r') as f:
         html = f.read()
 
     goal_entries, goals_num = generate_icons_section(goals, path_dicts)
@@ -212,7 +221,7 @@ def main():
     convert_images(path_dicts,
                    args.modified_images)
     generate_html(goals, ideas, texticons, events, news_events, agencies, decisions,
-                  decisions_cat, decisions_pics, path_dicts, args.title, args.favicon, args.replace_date)
+                  decisions_cat, decisions_pics, path_dicts, args.title, args.favicon, args.replace_date, args.template_path)
     print("The following files had exceptions:")
     for f in BAD_FILES:
         print(f[0])
@@ -222,6 +231,12 @@ def main():
 def setup_cli_arguments():
     parser = argparse.ArgumentParser(
         description='')
+    parser.add_argument('--title',
+                        help='Webpage title', required=True)
+    parser.add_argument('--template-path', dest="template_path",
+                        help='Path to template file', required=False, default="github-pages/index.template")
+    parser.add_argument('--favicon',
+                        help='Path to webpage favicon', required=False)
     parser.add_argument('--goals', nargs='*',
                         help='Paths to goals (national focus) interface gfx files', required=False)
     parser.add_argument('--ideas', nargs='*',
@@ -240,10 +255,6 @@ def setup_cli_arguments():
                         help='Paths to decisions category interface gfx files', required=False)
     parser.add_argument('--decisions-pics', nargs='*', dest="decisions_pics",
                         help='Paths to decision category picture interface gfx files', required=False)
-    parser.add_argument('--title',
-                        help='Webpage title', required=True)
-    parser.add_argument('--favicon',
-                        help='Path to webpage favicon', required=False)
     parser.add_argument('--modified-images', nargs='*',
                         help='Paths to modified image files (If not set, will convert all images)', dest="modified_images", required=False)
     parser.add_argument('--modified-images-str', nargs='?',
@@ -252,30 +263,31 @@ def setup_cli_arguments():
                         help='If used, will replace UTC date with the current one', dest="replace_date", required=False)
 
     args = parser.parse_args()
-    args.goals = [os.path.normpath(x)
+    args.template_path = Path(args.template_path)
+    args.goals = [Path(x)
                   for x in args.goals] if args.goals and args.goals[0] else []
-    args.ideas = [os.path.normpath(x)
+    args.ideas = [Path(x)
                   for x in args.ideas] if args.ideas and args.ideas[0] else []
-    args.texticons = [os.path.normpath(
+    args.texticons = [Path(
         x) for x in args.texticons] if args.texticons and args.texticons[0] else []
-    args.events = [os.path.normpath(x)
+    args.events = [Path(x)
                    for x in args.events] if args.events and args.events[0] else []
-    args.news_events = [os.path.normpath(
+    args.news_events = [Path(
         x) for x in args.news_events] if args.news_events and args.news_events[0] else []
-    args.agencies = [os.path.normpath(
+    args.agencies = [Path(
         x) for x in args.agencies] if args.agencies and args.agencies[0] else []
-    args.decisions = [os.path.normpath(
+    args.decisions = [Path(
         x) for x in args.decisions] if args.decisions and args.decisions[0] else []
-    args.decisions_cat = [os.path.normpath(
+    args.decisions_cat = [Path(
         x) for x in args.decisions_cat] if args.decisions_cat and args.decisions_cat[0] else []
-    args.decisions_pics = [os.path.normpath(
+    args.decisions_pics = [Path(
         x) for x in args.decisions_pics] if args.decisions_pics and args.decisions_pics[0] else []
     if args.modified_images_str:
         args.modified_images_str = [x.replace("'", "") for x in re.findall(
             r"'[^']+'", args.modified_images_str)]
         args.modified_images = args.modified_images_str
     if args.modified_images:
-        args.modified_images = [os.path.normpath(
+        args.modified_images = [Path(
             x) for x in args.modified_images]
     return args
 
