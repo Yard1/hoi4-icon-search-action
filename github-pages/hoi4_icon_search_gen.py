@@ -67,6 +67,7 @@ def convert_image(path, frames):
             library.MagickSetCompressionQuality(img.wand, 00)
             new_fname = path.parent.joinpath(fname + '.png')
             print("Saving %s..." % (new_fname))
+            img.auto_orient()
             img.save(filename=new_fname)
             return new_fname
     ex_message = "%s does not exist!" % path
