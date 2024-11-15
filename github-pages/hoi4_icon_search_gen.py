@@ -119,12 +119,18 @@ def read_gfx_file(gfx_paths):
                 texturefile = ''
                 try:
                     noOfFrames = 1
-                    match = re.search(r'\s+name\s*=\s*\"?(.+?)\"?',
+                    match = re.search(r'\s+name\s*=\s*\"(.+?)\"',
                                       spriteType, re.IGNORECASE)
+                    if not match:
+                        match = re.search(r'\s+name\s*=\s*([^\s]+)',
+                                        spriteType, re.IGNORECASE)
                     if match:
                         name = match.group(1)
-                    match = re.search(r'\s+texturefile\s*=\s*\"?(.+?)\"?',
+                    match = re.search(r'\s+texturefile\s*=\s*\"(.+?)\"',
                                       spriteType, re.IGNORECASE)
+                    if not match:
+                        match = re.search(r'\s+texturefile\s*=\s*([^\s]+)',
+                                        spriteType, re.IGNORECASE)
                     if match:
                         texturefile = str(match.group(1))
                         if texturefile[0] == "\\" or texturefile[0] == "/":
@@ -344,7 +350,10 @@ def setup_cli_arguments():
         for path in paths:
             if not path:
                 continue
-            new_paths = list(Path(".").glob(path))
+            if Path(path).exists() and Path(path).is_dir():
+                new_paths = list(Path(path).glob("*.gfx"))
+            else:
+                new_paths = list(Path(".").glob(path))
             print(f"Resolving {path} into {new_paths}")
             parsed_paths.extend(new_paths)
         return parsed_paths
