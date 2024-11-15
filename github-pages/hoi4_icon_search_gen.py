@@ -122,11 +122,11 @@ def read_gfx_file(gfx_paths):
                 texturefile = ''
                 try:
                     noOfFrames = 1
-                    match = re.search(r'\s+name\s*=\s*\"(.+?)\"',
+                    match = re.search(r'\s+name\s*=\s*\"?(.+?)\"?',
                                       spriteType, re.IGNORECASE)
                     if match:
                         name = match.group(1)
-                    match = re.search(r'\s+texturefile\s*=\s*\"(.+?)\"',
+                    match = re.search(r'\s+texturefile\s*=\s*\"?(.+?)\"?',
                                       spriteType, re.IGNORECASE)
                     if match:
                         texturefile = str(match.group(1))
@@ -331,33 +331,31 @@ def setup_cli_arguments():
     parser.add_argument('--replace-date', default=False, action='store_true',
                         help='If used, will replace UTC date with the current one', dest="replace_date", required=False)
 
+    def _parse_paths(paths):
+        parsed_paths = []
+        for path in paths:
+            if not path:
+                continue
+            parsed_paths.extend(Path(".").glob(path))
+        return parsed_paths
+
     args = parser.parse_args()
     args.template_path = Path(args.template_path)
-    args.goals = [Path(x)
-                  for x in args.goals] if args.goals and args.goals[0] else []
-    args.ideas = [Path(x)
-                  for x in args.ideas] if args.ideas and args.ideas[0] else []
-    args.texticons = [Path(
-        x) for x in args.texticons] if args.texticons and args.texticons[0] else []
-    args.events = [Path(x)
-                   for x in args.events] if args.events and args.events[0] else []
-    args.news_events = [Path(
-        x) for x in args.news_events] if args.news_events and args.news_events[0] else []
-    args.agencies = [Path(
-        x) for x in args.agencies] if args.agencies and args.agencies[0] else []
-    args.decisions = [Path(
-        x) for x in args.decisions] if args.decisions and args.decisions[0] else []
-    args.decisions_cat = [Path(
-        x) for x in args.decisions_cat] if args.decisions_cat and args.decisions_cat[0] else []
-    args.decisions_pics = [Path(
-        x) for x in args.decisions_pics] if args.decisions_pics and args.decisions_pics[0] else []
+    args.goals = _parse_paths(args.goals)
+    args.ideas = _parse_paths(args.ideas)
+    args.texticons = _parse_paths(args.texticons)
+    args.events = _parse_paths(args.events)
+    args.news_events = _parse_paths(args.news_events)
+    args.agencies = _parse_paths(args.agencies)
+    args.decisions = _parse_paths(args.decisions)
+    args.decisions_cat = _parse_paths(args.decisions_cat)
+    args.decisions_pics = _parse_paths(args.decisions_pics)
     if args.modified_images_str:
         args.modified_images_str = [x.replace("'", "") for x in re.findall(
             r"'[^']+'", args.modified_images_str)]
         args.modified_images = args.modified_images_str
     if args.modified_images:
-        args.modified_images = [Path(
-            x) for x in args.modified_images]
+        args.modified_images = _parse_paths(args.modified_images)
     return args
 
 
