@@ -194,7 +194,7 @@ def generate_icons_section(icons_dict, path_dicts, remove_str=None):
             icons_num += 1
             icon_entries.append('''
           <div data-clipboard-text="%s" data-search-text="%s" title="%s" class="icon">
-            <img src="%s" alt="%s">
+            <img src="%s" loading="lazy" alt="%s">
           </div>
         ''' % (name, name, name, img_src, name))
     return (icon_entries, icons_num)
