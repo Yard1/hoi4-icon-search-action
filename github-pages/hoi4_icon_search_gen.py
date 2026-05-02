@@ -26,6 +26,7 @@ import re
 import sys
 import argparse
 import datetime
+import html
 import traceback
 from collections import defaultdict
 from pathlib import Path
@@ -88,6 +89,11 @@ class SpriteType:
 
 def get_case_insensitive_glob(path):
     return ''.join(['[%s%s]' % (c.lower(), c.upper()) if c.isalpha() else c for c in str(path)])
+
+
+def normalize_gfx_path(path):
+    normalized_path = str(path).replace("\\", "/").lstrip("/")
+    return normalized_path
 
 
 def read_gfx(gfx_paths):
@@ -191,12 +197,16 @@ def generate_icons_section(icons_dict, path_dicts, remove_str=None):
         if img_src.exists():
             if remove_str:
                 name = name.replace(remove_str, "")
+            normalized_path = normalize_gfx_path(path)
+            name_attr = html.escape(name, quote=True)
+            normalized_path_attr = html.escape(normalized_path, quote=True)
+            img_src_attr = html.escape(str(img_src), quote=True)
             icons_num += 1
             icon_entries.append('''
-          <div data-clipboard-text="%s" data-search-text="%s" title="%s" class="icon">
+          <div data-clipboard-text="%s" data-search-name="%s" data-search-path="%s" title="%s" class="icon">
             <img src="%s" loading="lazy" alt="%s">
           </div>
-        ''' % (name, name, name, img_src, name))
+        ''' % (name_attr, name_attr, normalized_path_attr, name_attr, img_src_attr, name_attr))
     return (icon_entries, icons_num)
 
 

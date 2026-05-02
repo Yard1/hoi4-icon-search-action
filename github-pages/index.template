@@ -380,7 +380,9 @@
       for (let i = 0; i < iconsElements.length; i++) {
         const icon = iconsElements[i];
         icon.dataset.iconIndex = i; // Save index as a data attribute
-        const searchText = icon.getAttribute("data-search-text") || "";
+        const searchName = icon.getAttribute("data-search-name") || "";
+        const searchPath = icon.getAttribute("data-search-path") || "";
+        const searchText = [searchName, searchPath].filter(Boolean).join(" ");
         const searchTextUC = searchText.toUpperCase();
         icon.setAttribute("data-search-text-uc", searchTextUC);
         
